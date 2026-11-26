@@ -1,0 +1,14 @@
+{
+  "name": "LingBot-Map2 Streaming — causal checkpoint pending release",
+  "sha256": "REPLACE_WITH_PUBLISHED_CAUSAL_CHECKPOINT_SHA256",
+  "schema_version": 1,
+  "training_mode": "causal",
+  "architecture": "dinov3_vitl16_causal24",
+  "spatial_rope": "max",
+  "scale_frames": 8,
+  "sliding_window": 64,
+  "camera_iterations": 4,
+  "max_frames": 1024,
+  "width": 512,
+  "height": 288
+}

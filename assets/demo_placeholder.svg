@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="230" viewBox="0 0 1200 230" role="img" aria-labelledby="title description">
+  <title id="title">Demo video — coming soon</title>
+  <desc id="description">Placeholder for the LingBot-Map 2.0 demonstration video.</desc>
+  <rect x="1" y="1" width="1198" height="228" rx="14" fill="#f6f8fa" stroke="#d0d7de" stroke-width="2"/>
+  <circle cx="600" cy="72" r="28" fill="#ffffff" stroke="#8c959f" stroke-width="2"/>
+  <path d="M592 59 L592 85 L612 72 Z" fill="#8c959f"/>
+  <text x="600" y="139" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="600" fill="#24292f">Demo Video</text>
+  <text x="600" y="174" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="19" fill="#57606a">Coming soon</text>
+</svg>

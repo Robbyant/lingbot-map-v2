@@ -1,0 +1,5 @@
+# Acquisition and layout: ../../README.md#data-preparation
+protocol: crocodl_pose
+raw_data_root: /path/to/crocodl_processed
+scenes: null  # All paper scenes; an explicit list produces a partial report.
+camera_index: camera/frames.jsonl  # Must match the dense reference camera revision.

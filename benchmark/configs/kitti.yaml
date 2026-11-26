@@ -1,0 +1,6 @@
+# Base config: resolve dataset/method YAMLs from the sibling directories.
+workspace: ../../outputs/benchmark
+datasets:
+  - kitti
+methods:
+  - lingbot_map2

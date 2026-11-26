@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lingbot-map2-streaming"
+version = "0.1.0rc1"
+description = "LingBot-Map2 pure causal online streaming inference"
+readme = "README.md"
+requires-python = ">=3.10"
+license-files = ["LICENSE.txt", "LICENSES/*.txt", "LICENSES/THIRD_PARTY.md"]
+dependencies = ["torch>=2.8", "numpy", "Pillow", "opencv-python", "einops", "flashinfer-python"]
+
+[project.optional-dependencies]
+benchmark = ["scipy>=1.11", "open3d>=0.19", "PyYAML>=6"]
+vis = ["viser>=1.1,<2", "matplotlib", "onnxruntime", "trimesh", "imageio-ffmpeg"]
+
+[project.scripts]
+lingbot-map2 = "lingbot_map2.utils.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["lingbot_map2*", "benchmark*"]
+
+[tool.setuptools.package-data]
+benchmark = ["configs/*.json", "configs/*.yaml", "configs/datasets/*.yaml", "configs/methods/*.yaml", "envs/*.sh", "README.md"]
+
+[tool.ruff]
+line-length = 88

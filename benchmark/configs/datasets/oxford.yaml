@@ -1,0 +1,5 @@
+# Acquisition and layout: ../../README.md#data-preparation
+protocol: oxford_trajectory
+input_scope: full_stream  # Both scopes require the full trajectory source dataset.
+raw_data_root: /path/to/oxford_full
+scenes: null  # All paper scenes; an explicit list produces a partial report.

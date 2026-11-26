@@ -1,0 +1,5 @@
+# Acquisition and layout: ../../README.md#data-preparation
+protocol: oxford_dense
+raw_data_root: /path/to/oxford_metric
+scenes: null  # All paper scenes; an explicit list produces a partial report.
+reference_root: /path/to/references/oxford

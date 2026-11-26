@@ -1,0 +1,4 @@
+# Acquisition and layout: ../../README.md#data-preparation
+protocol: princeton365_pose
+raw_data_root: /path/to/Benchmark_blur_val/scanning_videos
+scenes: null  # All paper scenes; an explicit list produces a partial report.

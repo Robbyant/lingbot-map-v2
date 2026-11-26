@@ -1,0 +1,5 @@
+# Acquisition and layout: ../../README.md#data-preparation
+protocol: vbr_trajectory
+input_scope: full_stream  # Or keyframes for an explicitly labeled keyframe-only study.
+raw_data_root: /path/to/vbr_aligned
+scenes: null  # All paper scenes; an explicit list produces a partial report.

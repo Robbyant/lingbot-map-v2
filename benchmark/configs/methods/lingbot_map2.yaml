@@ -1,0 +1,9 @@
+model: GCRStream
+_mode: online
+_checkpoint: /path/to/lingbot_map2_causal.pt
+_config: null  # Matching checkpoint JSON; defaults to <checkpoint>.json.
+_device: cuda:0
+_compile: true
+_depth: true  # Set false for pose-only accuracy runs; dense evaluation requires true.
+# Architecture and precision come from the verified causal checkpoint configuration.
+# This release supports the native pure causal Online model.

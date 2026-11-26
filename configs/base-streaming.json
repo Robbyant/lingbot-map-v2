@@ -1,0 +1,14 @@
+{
+  "name": "LingBot-Map 2.0 Base Streaming",
+  "sha256": "d3ae62a09d3caaeb0947c4372f6fb23a4c0e85304867fa9702948ba030310e27",
+  "schema_version": 1,
+  "training_mode": "causal",
+  "architecture": "dinov3_vitl16_causal24",
+  "spatial_rope": "max",
+  "scale_frames": 8,
+  "sliding_window": 64,
+  "camera_iterations": 4,
+  "max_frames": 1024,
+  "width": 512,
+  "height": 288
+}

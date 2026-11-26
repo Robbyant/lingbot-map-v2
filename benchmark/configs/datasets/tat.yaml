@@ -1,0 +1,4 @@
+# Acquisition and layout: ../../README.md#data-preparation
+protocol: tat_pose
+raw_data_root: /path/to/tanks_and_temples
+scenes: null  # All paper scenes; an explicit list produces a partial report.
