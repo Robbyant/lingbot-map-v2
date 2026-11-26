@@ -36,7 +36,6 @@ https://github.com/user-attachments/assets/57b41dfa-0281-4b09-8b57-e2cddf8cb659
 LingBot-Map 2.0 predicts camera poses and dense geometry from incoming RGB sequences. This repository provides the **geometric streaming base model** from the technical report, trained for causal Online Streaming.
 
 - **Streaming Reconstruction:** Predict camera poses, intrinsics, depth and confidence from incoming RGB frames.
-- **Geometric Context:** Combine DINOv3 image features with persistent context and a sliding window using paged KV-cache attention.
 - **Flexible Integration:** Run reconstruction from the command line or integrate frame-by-frame inference and keyframe selection into your application.
 
 ---
