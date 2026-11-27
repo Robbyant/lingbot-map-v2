@@ -189,6 +189,39 @@ cloud and original RGB videos; `pip install -e ".[vis]"` bundles
 `imageio-ffmpeg`, or a system `ffmpeg` binary on `PATH` is used if available).
 The viewer stays open until you press Ctrl+C in the terminal.
 
+### Example reconstructions
+
+Online streaming reconstructions produced by `demo.py`:
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/examples/courthouse.webp" width="100%" alt="Courthouse 3D reconstruction"><br>
+      <sub><b>Courthouse</b></sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/examples/university.webp" width="100%" alt="University 3D reconstruction"><br>
+      <sub><b>University</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/examples/bund.webp" width="100%" alt="The Bund 3D reconstruction"><br>
+      <sub><b>The Bund</b></sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/examples/apartment.webp" width="100%" alt="Apartment 3D reconstruction"><br>
+      <sub><b>Apartment</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="assets/examples/kitti08.webp" width="88%" alt="KITTI 08 3D reconstruction"><br>
+      <sub><b>KITTI 08</b></sub>
+    </td>
+  </tr>
+</table>
+
 ### Your image sequences
 
 Four hosted example sequences are documented in [`example/`](example/README.md):
@@ -219,8 +252,13 @@ The interval of 1 retains every supplied keyframe. See the example README for th
 Use `--images path/to/rgb` for your own image folder, or provide an ordered list
 with `--image-list frames.json`. The matching causal checkpoint and JSON
 configuration are required. `--model_path` and `--image_folder` are accepted
-aliases. The model uses the same preprocessing and Uniform320 keyframe policy
-as `infer.py`; `--keyframe-interval` overrides the latter.
+aliases. `demo.py` uses the same preprocessing as `infer.py` and caps persistent
+KV-cache keyframes with `--num-keyframes` (default `320`, keeping the
+initialization prefix plus uniformly spaced frames through the final frame so
+non-keyframes are predicted without entering the KV cache; inputs with up to
+`320` frames keep all frames, while setting `--num-keyframes` equal to the
+8-frame initialization prefix retains only the initialization frames). Pass
+`--keyframe-interval` to use a fixed interval instead.
 
 ### View saved predictions
 
@@ -236,8 +274,9 @@ size to align RGB colors with predicted depth.
 
 ### Display options
 
-The drawing defaults follow LingBot-Map's demo: `--point-size 0.00001`,
-`--conf-threshold 1.5` (an absolute confidence threshold), and
+The drawing defaults follow LingBot-Map's demo with a compact default camera
+scale: `--point-size 0.00001`, `--camera-size 0.01` (slider range down to
+`0.001`), `--conf-threshold 1.5` (an absolute confidence threshold), and
 `--downsample-factor 10` (keep every tenth point after filtering). Cameras use
 small, untextured frustums with a temporal color gradient; click a camera to
 view the scene from its pose. **Overview** and **Look At Scene Center** use

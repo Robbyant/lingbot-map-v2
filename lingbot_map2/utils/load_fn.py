@@ -29,6 +29,35 @@ def uniform_keyframe_ids(count, *, prefix=8, interval=None):
     return list(range(prefix)) + list(range(prefix, count, interval))
 
 
+def exact_keyframe_ids(count, *, prefix=8, num_keyframes=320):
+    """Keep all frames up to num_keyframes, or keep the prefix plus uniformly
+    spaced frames so the persistent KV-cache budget equals num_keyframes.
+
+    When count > num_keyframes:
+    - num_keyframes == prefix retains only the initialization prefix [0..prefix-1].
+    - num_keyframes == prefix + 1 retains the prefix plus the final frame count - 1.
+    - num_keyframes >= prefix + 2 retains the prefix plus uniformly spaced frames
+      spanning [prefix, count - 1] (inclusive).
+    """
+    if type(count) is not int or type(prefix) is not int or not 0 < prefix <= count:
+        raise ValueError("input count must accommodate a positive prefix")
+    if type(num_keyframes) is not int or num_keyframes < prefix:
+        raise ValueError(f"num_keyframes must be an integer >= prefix ({prefix})")
+    if count <= num_keyframes:
+        return list(range(count))
+    remaining = num_keyframes - prefix
+    if remaining == 0:
+        return list(range(prefix))
+    if remaining == 1:
+        return list(range(prefix)) + [count - 1]
+    span = count - 1 - prefix
+    denom = remaining - 1
+    # Exact half-up integer rounding guarantees strictly increasing indices
+    # spanning [prefix, count - 1] since count > num_keyframes implies span > denom.
+    tail = [prefix + (2 * i * span + denom) // (2 * denom) for i in range(remaining)]
+    return list(range(prefix)) + tail
+
+
 def image_paths(folder: str | None, image_list: str | None) -> list[Path]:
     if image_list:
         source = Path(image_list).resolve(strict=True)

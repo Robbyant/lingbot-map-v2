@@ -251,7 +251,7 @@ class PointCloudViewer:
         size: int = 512,
         downsample_factor: int = 10,
         point_size: float = 0.00001,
-        camera_size: float = 0.03,
+        camera_size: float = 0.01,
         pred_dict: Optional[Dict[str, Any]] = None,
         use_point_map: bool = False,
         mask_sky: bool = False,
@@ -838,9 +838,9 @@ class PointCloudViewer:
         )
         self.camsize_slider = self.server.gui.add_slider(
             "Camera Size",
-            min=0.01,
+            min=0.001,
             max=0.5,
-            step=0.01,
+            step=0.001,
             initial_value=self.camera_size,
         )
         self.downsample_slider = self.server.gui.add_slider(

@@ -3,12 +3,37 @@
 """Run Online inference or load saved predictions, then launch the Viser viewer."""
 
 import argparse
+import gc
 import json
 from pathlib import Path
 
 import numpy as np
 
-from lingbot_map2.utils.load_fn import cover_resize, image_paths, uniform_keyframe_ids
+from lingbot_map2.utils.load_fn import (
+    cover_resize,
+    exact_keyframe_ids,
+    image_paths,
+    uniform_keyframe_ids,
+)
+
+DEFAULT_DEMO_KEYFRAMES = 320
+
+
+def select_demo_keyframes(
+    count,
+    *,
+    prefix,
+    num_keyframes=None,
+    keyframe_interval=None,
+    default_num_keyframes=DEFAULT_DEMO_KEYFRAMES,
+):
+    """Select persistent KV-cache keyframes for demo.py Online inference."""
+    if num_keyframes is not None and keyframe_interval is not None:
+        raise ValueError("cannot set both --num-keyframes and --keyframe-interval")
+    if keyframe_interval is not None:
+        return uniform_keyframe_ids(count, prefix=prefix, interval=keyframe_interval)
+    target = default_num_keyframes if num_keyframes is None else num_keyframes
+    return exact_keyframe_ids(count, prefix=prefix, num_keyframes=target)
 
 
 def run_online_inference(model, paths, keyframes):
@@ -112,7 +137,26 @@ def main(argv=None):
     parser.add_argument(
         "--compile", action=argparse.BooleanOptionalAction, default=True
     )
-    parser.add_argument("--keyframe-interval", type=int)
+    keyframe_policy = parser.add_mutually_exclusive_group()
+    keyframe_policy.add_argument(
+        "--num-keyframes",
+        "--num_keyframes",
+        type=int,
+        default=None,
+        help=(
+            "target persistent keyframes in the KV cache "
+            f"(default: {DEFAULT_DEMO_KEYFRAMES} when --keyframe-interval is unset; "
+            "must be >= scale_frames, which retains only the initialization prefix; "
+            "non-keyframes are predicted without entering the KV cache)"
+        ),
+    )
+    keyframe_policy.add_argument(
+        "--keyframe-interval",
+        "--keyframe_interval",
+        type=int,
+        default=None,
+        help="fixed persistent-frame interval after the prefix (overrides --num-keyframes)",
+    )
     parser.add_argument("--max-frames", type=int)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8080)
@@ -124,7 +168,7 @@ def main(argv=None):
         help="project depth to points every N frames (1 = every frame)",
     )
     parser.add_argument("--point-size", "--point_size", type=float, default=0.00001)
-    parser.add_argument("--camera-size", "--camera_size", type=float, default=0.03)
+    parser.add_argument("--camera-size", "--camera_size", type=float, default=0.01)
     parser.add_argument(
         "--conf-threshold", "--conf_threshold", type=float, default=1.5
     )
@@ -150,6 +194,10 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.depth_stride < 1:
         parser.error("--depth-stride must be positive")
+    if args.num_keyframes is not None and args.num_keyframes < 1:
+        parser.error("--num-keyframes must be positive")
+    if args.keyframe_interval is not None and args.keyframe_interval < 1:
+        parser.error("--keyframe-interval must be positive")
     if not 1 <= args.port <= 65535:
         parser.error("port must be between 1 and 65535")
     if args.checkpoint and not (args.images or args.image_list):
@@ -162,6 +210,7 @@ def main(argv=None):
             args.config,
             args.width,
             args.height,
+            args.num_keyframes,
             args.keyframe_interval,
             args.max_frames,
         )
@@ -183,17 +232,29 @@ def main(argv=None):
         paths = image_paths(args.images, args.image_list)
         checkpoint, config = checkpoint_paths(args.checkpoint, args.config)
         spec = CheckpointConfig.read(config)
-        keyframes = set(
-            uniform_keyframe_ids(
-                len(paths), prefix=spec.scale_frames, interval=args.keyframe_interval
+        try:
+            keyframes = set(
+                select_demo_keyframes(
+                    len(paths),
+                    prefix=spec.scale_frames,
+                    num_keyframes=args.num_keyframes,
+                    keyframe_interval=args.keyframe_interval,
+                )
             )
-        )
+        except ValueError as error:
+            parser.error(str(error))
         capacity = spec.max_frames if args.max_frames is None else args.max_frames
         required = len(keyframes) + int(len(paths) - 1 not in keyframes)
         if capacity < required:
             parser.error(
                 f"--max-frames must be at least {required} for these keyframes"
             )
+        print(
+            f"Running Online inference on {len(paths)} frames "
+            f"({len(keyframes)} persistent keyframes in KV cache, "
+            f"{len(paths) - len(keyframes)} non-keyframes).",
+            flush=True,
+        )
         model = load_model(
             checkpoint,
             config=config,
@@ -208,6 +269,13 @@ def main(argv=None):
             model.warmup(paths[: min(spec.scale_frames + 2, capacity)])
         pred_dict = run_online_inference(model, paths, keyframes)
         str_paths = [str(p) for p in paths]
+        device = model.device
+        del model
+        gc.collect()
+        if device.type == "cuda":
+            import torch
+
+            torch.cuda.empty_cache()
     else:
         pred_dict, str_paths = load_saved_predictions(args.predictions)
 

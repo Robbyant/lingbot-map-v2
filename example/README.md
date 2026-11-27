@@ -7,9 +7,9 @@ archives contain the full example inputs. KITTI 08 uses a fixed selection of
 | Sequence | Input frames | Persistent frames with the documented settings |
 | --- | ---: | ---: |
 | `courthouse` (Courthouse) | 286 | 286 |
-| `university` (University) | 324 | 166 |
-| `bund` (The Bund / 外滩) | 480 | 244 |
-| `apartment` (Apartment / 公寓) | 480 | 244 |
+| `university` (University) | 324 | 320 |
+| `bund` (The Bund / 外滩) | 480 | 320 |
+| `apartment` (Apartment / 公寓) | 480 | 320 |
 | `kitti08` (KITTI Odometry 08) | 321 | 321 |
 
 ## Download the four hosted scenes
@@ -68,11 +68,15 @@ python demo.py \
     --mask-sky
 ```
 
-For the four hosted scenes, replace `courthouse` with the chosen scene name. The default Uniform320
-policy keeps the first eight frames, then every `ceil(N/320)`-th frame. All input
-frames receive predictions. Inference completes before the viewer starts.
-The viewer uses point size `0.00001`, visibility threshold `1.5` and downsample
-factor `10` by default. The checkpoint is downloaded separately.
+For the four hosted scenes, replace `courthouse` with the chosen scene name. By default,
+`demo.py` caps persistent KV-cache keyframes to `320` (`--num-keyframes 320`): sequences
+with up to `320` frames keep every frame, while longer sequences keep the first eight
+initialization frames plus `312` uniformly spaced frames. All input frames receive
+predictions without non-keyframes entering the KV cache. Inference completes before the
+viewer starts.
+The viewer uses point size `0.00001`, camera size `0.01`, visibility threshold
+`1.5` and downsample factor `10` by default. The checkpoint is downloaded
+separately.
 
 ## KITTI 08
 
